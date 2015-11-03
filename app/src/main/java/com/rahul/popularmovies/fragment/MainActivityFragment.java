@@ -1,5 +1,6 @@
 package com.rahul.popularmovies.fragment;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -35,6 +36,7 @@ public class MainActivityFragment extends Fragment {
 
     GridView movies_grid;
     MoviesAdapter mMoviesAdapter;
+    ProgressDialog mProgreeDialog;
 
 
     public MainActivityFragment() {
@@ -43,22 +45,21 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+        mProgreeDialog = new ProgressDialog(getActivity());
+        mProgreeDialog.setMessage("Loading");
+        super.onCreate(savedInstanceState);
 
 
         FetchMoviesTask();
 
 
-
     }
 
 
-
-    public void FetchMoviesTask()
-    {
-        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String criteria=prefs.getString(getString(R.string.pref_sortorder_key),getString(R.string.pref_sortorder_default));
+    public void FetchMoviesTask() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String criteria = prefs.getString(getString(R.string.pref_sortorder_key), getString(R.string.pref_sortorder_default));
 
         FetchMovies mFetchMovies = new FetchMovies();
         mFetchMovies.execute(criteria);
@@ -78,6 +79,8 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         movies_grid = (GridView) rootView.findViewById(R.id.movies_grid);
+        mMoviesAdapter=new MoviesAdapter(getActivity(),new ArrayList<Movie>());
+        movies_grid.setAdapter(mMoviesAdapter);
 
 
 
@@ -85,12 +88,22 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    public class FetchMovies extends AsyncTask<String, Void, ArrayList<Movie>> {
+    public class FetchMovies extends AsyncTask<String, Integer, ArrayList<Movie>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            mProgreeDialog.setCancelable(false);
+
+            mProgreeDialog.show();
+        }
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
 
         @Override
         protected ArrayList<Movie> doInBackground(String... params) {
+
 
 
             HttpURLConnection urlConnection = null;
@@ -106,8 +119,8 @@ public class MainActivityFragment extends Fragment {
 
             String sort_by = params[0];
 
-                    //Generate the key from moviedb.org and paste it here
-            String api_key = "XXXXXXXXXXXXXXXXXXXXXXXX";
+            //Generate the key from moviedb.org and paste it here
+            String api_key = "7fb8e078340fb887a6e93698732e3605";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, sort_by)
@@ -191,10 +204,12 @@ public class MainActivityFragment extends Fragment {
 
             ArrayList<Movie> moviesList = MovieParser.getMoviesDataFromJson(moviesJsonStr);
 
+
             return moviesList;
 
 
         }
+
 
 
         @Override
@@ -202,11 +217,15 @@ public class MainActivityFragment extends Fragment {
 
             super.onPostExecute(moviesList);
 
-            mMoviesAdapter = new MoviesAdapter(getActivity(), moviesList);
 
-            movies_grid.setAdapter(mMoviesAdapter);
+            for(Movie movie:moviesList)
+            mMoviesAdapter.add(movie);
+
+            mMoviesAdapter.notifyDataSetChanged();
 
 
+
+            mProgreeDialog.dismiss();
 
 
         }
