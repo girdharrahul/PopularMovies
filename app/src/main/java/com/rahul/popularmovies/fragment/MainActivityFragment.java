@@ -120,7 +120,7 @@ public class MainActivityFragment extends Fragment {
             String sort_by = params[0];
 
             //Generate the key from moviedb.org and paste it here
-            String api_key = "7fb8e078340fb887a6e93698732e3605";
+            String api_key = "XXXXXXXXXXXXXXXXXXXXXXX";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, sort_by)
