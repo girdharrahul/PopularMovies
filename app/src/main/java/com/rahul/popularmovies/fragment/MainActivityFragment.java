@@ -1,7 +1,10 @@
 package com.rahul.popularmovies.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.rahul.popularmovies.R;
 import com.rahul.popularmovies.adapter.MoviesAdapter;
@@ -37,6 +41,7 @@ public class MainActivityFragment extends Fragment {
     GridView movies_grid;
     MoviesAdapter mMoviesAdapter;
     ProgressDialog mProgreeDialog;
+    private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
 
     public MainActivityFragment() {
@@ -45,13 +50,19 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        mProgreeDialog = new ProgressDialog(getActivity());
-        mProgreeDialog.setMessage("Loading");
         super.onCreate(savedInstanceState);
 
 
-        FetchMoviesTask();
+        mProgreeDialog = new ProgressDialog(getActivity());
+        mProgreeDialog.setMessage("Loading");
+
+        Log.d(LOG_TAG, "onCreate Fragment");
+
+        if (isNetworkAvailable()) {
+            FetchMoviesTask();
+        } else {
+            Toast.makeText(getActivity(), "No internet connection!", Toast.LENGTH_SHORT).show();
+        }
 
 
     }
@@ -70,7 +81,23 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        FetchMoviesTask();
+        Log.d(LOG_TAG, "onStart Fragment");
+
+        if (isNetworkAvailable()) {
+            FetchMoviesTask();
+        } else {
+            Toast.makeText(getActivity(), "No internet connection!", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, "onResume Fragment");
+
+
     }
 
     @Override
@@ -79,16 +106,16 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         movies_grid = (GridView) rootView.findViewById(R.id.movies_grid);
-        mMoviesAdapter=new MoviesAdapter(getActivity(),new ArrayList<Movie>());
+        mMoviesAdapter = new MoviesAdapter(getActivity(), new ArrayList<Movie>());
         movies_grid.setAdapter(mMoviesAdapter);
-
 
 
         return rootView;
     }
 
 
-    public class FetchMovies extends AsyncTask<String, Integer, ArrayList<Movie>> {
+    public class
+            FetchMovies extends AsyncTask<String, Integer, ArrayList<Movie>> {
 
         @Override
         protected void onPreExecute() {
@@ -105,7 +132,6 @@ public class MainActivityFragment extends Fragment {
         protected ArrayList<Movie> doInBackground(String... params) {
 
 
-
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
@@ -120,12 +146,13 @@ public class MainActivityFragment extends Fragment {
             String sort_by = params[0];
 
             //Generate the key from moviedb.org and paste it here
-            String api_key = "XXXXXXXXXXXXXXXXXXXXXXX";
+            String api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, sort_by)
                     .appendQueryParameter(API_KEY_PARAM, api_key)
                     .build();
+
 
             Log.d(LOG_TAG, builtUri.toString());
             String moviesJsonStr;
@@ -211,18 +238,16 @@ public class MainActivityFragment extends Fragment {
         }
 
 
-
         @Override
         protected void onPostExecute(ArrayList<Movie> moviesList) {
 
             super.onPostExecute(moviesList);
 
-
-            for(Movie movie:moviesList)
-            mMoviesAdapter.add(movie);
+            mMoviesAdapter.clear();
+            for (Movie movie : moviesList)
+                mMoviesAdapter.add(movie);
 
             mMoviesAdapter.notifyDataSetChanged();
-
 
 
             mProgreeDialog.dismiss();
@@ -231,6 +256,18 @@ public class MainActivityFragment extends Fragment {
         }
 
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        boolean isAvailable = false;
+        if (networkInfo != null && networkInfo.isConnected()) {
+            isAvailable = true;
+        }
+
+        return isAvailable;
     }
 
 

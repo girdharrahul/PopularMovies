@@ -3,6 +3,7 @@ package com.rahul.popularmovies.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -11,12 +12,22 @@ import com.rahul.popularmovies.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG=MainActivity.class.getSimpleName();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.container,new MainActivityFragment()).commit();
+        Log.d(LOG_TAG, "onCreate activity");
+
+
+            if(savedInstanceState==null)
+            {
+                getSupportFragmentManager().beginTransaction().add(R.id.container, new MainActivityFragment()).commit();
+            }
+
 
 
     }

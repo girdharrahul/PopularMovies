@@ -15,7 +15,6 @@ import java.util.ArrayList;
  */
 public class MovieParser {
 
-    public static ArrayList<Movie> moviesArrayList;
    public static  final String LOG_TAG=MovieParser.class.getSimpleName();
 
 
@@ -23,7 +22,7 @@ public class MovieParser {
 
     {
 
-        moviesArrayList=new ArrayList<>();
+        ArrayList<Movie> moviesArrayList=new ArrayList<>();
 
         final String RESULT_LIST = "results";
         final String TITLE = "original_title";

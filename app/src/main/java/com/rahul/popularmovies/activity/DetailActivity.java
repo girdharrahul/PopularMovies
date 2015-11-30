@@ -15,7 +15,10 @@ public class DetailActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getSupportFragmentManager().beginTransaction().add(R.id.container, new DetailActivityFragment()).commit();
+        if(savedInstanceState==null) {
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new DetailActivityFragment()).commit();
+        }
 
 
 
