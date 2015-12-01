@@ -146,7 +146,7 @@ public class MainActivityFragment extends Fragment {
             String sort_by = params[0];
 
             //Generate the key from moviedb.org and paste it here
-            String api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+            String api_key = "XXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, sort_by)
@@ -243,14 +243,20 @@ public class MainActivityFragment extends Fragment {
 
             super.onPostExecute(moviesList);
 
-            mMoviesAdapter.clear();
-            for (Movie movie : moviesList)
-                mMoviesAdapter.add(movie);
 
-            mMoviesAdapter.notifyDataSetChanged();
+            if (moviesList != null) {
+                mMoviesAdapter.clear();
 
 
-            mProgreeDialog.dismiss();
+                for (Movie movie : moviesList)
+                    mMoviesAdapter.add(movie);
+
+                mMoviesAdapter.notifyDataSetChanged();
+
+                if(mProgreeDialog!=null)
+                mProgreeDialog.dismiss();
+
+            }
 
 
         }

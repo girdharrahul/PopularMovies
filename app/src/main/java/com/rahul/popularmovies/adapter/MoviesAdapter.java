@@ -73,6 +73,13 @@ public class MoviesAdapter extends ArrayAdapter<Movie>{
 
         Log.d(LOG_TAG, movie.getPoster());
 
+
+
+       /* Glide.with(mContext)
+                .load(movie.getPoster())
+                .centerCrop()
+                .crossFade()
+                .into(holder.poster);*/
         Picasso.with(getContext()).load(movie.getPoster()).into(holder.poster);
 
 

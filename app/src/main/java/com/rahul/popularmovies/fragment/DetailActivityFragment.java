@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.rahul.popularmovies.R;
-import com.squareup.picasso.Picasso;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -50,7 +50,11 @@ public class DetailActivityFragment extends Fragment {
         synopsis.setText(getActivity().getIntent().getStringExtra("synopsis"));
         rating.setText(getActivity().getIntent().getStringExtra("rating"));
         release_date.setText(getActivity().getIntent().getStringExtra("release_date"));
-        Picasso.with(getContext()).load(getActivity().getIntent().getStringExtra("poster")).into(poster);
+
+
+        Glide.with(getContext()).load(getActivity().getIntent().getStringExtra("poster")).into(poster);
+
+       // Picasso.with(getContext()).load(getActivity().getIntent().getStringExtra("poster")).into(poster);
 
 
         return rootView;
